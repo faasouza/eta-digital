@@ -11,7 +11,12 @@ def test_synthetic_data_has_new_three_filter_schema():
     assert list(frame.columns) == REQUIRED_COLUMNS
     validate_training_frame(frame)
     assert not frame.isna().any().any()
-    assert (frame[["filter_1_turbidity_ntu", "filter_2_turbidity_ntu", "filter_3_turbidity_ntu"]] >= 0).all().all()
+    turbidity_columns = [
+        "filter_1_turbidity_ntu",
+        "filter_2_turbidity_ntu",
+        "filter_3_turbidity_ntu",
+    ]
+    assert (frame[turbidity_columns] >= 0).all().all()
 
 
 def test_synthetic_data_is_reproducible():

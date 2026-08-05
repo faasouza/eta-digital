@@ -24,6 +24,9 @@ def validate_training_frame(frame: pd.DataFrame) -> pd.DataFrame:
         raise ValueError("training frame contains missing numeric values")
     if (validated[["raw_turbidity_ntu", "pac_mg_l", "polymer_mg_l", *OUTPUTS[:3]]] < 0).any().any():
         raise ValueError("turbidity and dosage values must be nonnegative")
-    if not validated["raw_ph"].between(0, 14).all() or not validated["filtered_ph"].between(0, 14).all():
+    if (
+        not validated["raw_ph"].between(0, 14).all()
+        or not validated["filtered_ph"].between(0, 14).all()
+    ):
         raise ValueError("pH must be between 0 and 14")
     return validated.sort_values("timestamp").reset_index(drop=True)

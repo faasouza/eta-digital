@@ -33,7 +33,9 @@ class ContextualMixtureOfExperts:
         self.is_fitted = True
         return self
 
-    def predict_distribution(self, frame: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def predict_distribution(
+        self, frame: pd.DataFrame
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         if not self.is_fitted:
             raise RuntimeError("mixture has not been fitted")
         weights = self.context_model.weights(frame)
@@ -55,7 +57,9 @@ class ContextualMixtureOfExperts:
         mean, covariance, weights = self.predict_distribution(frame)
         result = pd.DataFrame(mean, columns=self.outputs, index=frame.index)
         for output_index, output in enumerate(self.outputs):
-            result[f"{output}_std"] = np.sqrt(np.maximum(covariance[:, output_index, output_index], 0))
+            result[f"{output}_std"] = np.sqrt(
+                np.maximum(covariance[:, output_index, output_index], 0)
+            )
         result["dominant_context"] = [
             self.context_model.names[index] for index in np.argmax(weights, axis=1)
         ]

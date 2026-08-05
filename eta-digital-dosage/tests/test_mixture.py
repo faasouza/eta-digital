@@ -1,4 +1,3 @@
-import pandas as pd
 import yaml
 
 from generate_synthetic_data import generate_synthetic_dataset

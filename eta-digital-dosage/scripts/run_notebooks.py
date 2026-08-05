@@ -16,7 +16,11 @@ def run_notebook(path: Path) -> None:
 
 def main() -> None:
     notebook_dir = Path(__file__).resolve().parents[1] / "notebooks"
-    for name in ["01_train_model.ipynb", "02_register_mlflow.ipynb", "03_promote_to_production.ipynb"]:
+    for name in [
+        "01_train_model.ipynb",
+        "02_register_mlflow.ipynb",
+        "03_promote_to_production.ipynb",
+    ]:
         run_notebook(notebook_dir / name)
 
 

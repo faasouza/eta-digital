@@ -19,8 +19,16 @@ def generate_synthetic_dataset(points: int = 360, seed: int = 42) -> pd.DataFram
     baseline = 42 + 16 * np.sin(np.linspace(0, 8 * np.pi, points))
     raw_turbidity = np.clip(baseline + event + rng.normal(0, 6, points), 3, 260)
     raw_ph = np.clip(7.25 - 0.0018 * raw_turbidity + rng.normal(0, 0.11, points), 6.3, 8.1)
-    pac = np.clip(5.5 + 0.085 * raw_turbidity + 1.4 * (7.1 - raw_ph) + rng.normal(0, 0.7, points), 4, 28)
-    polymer = np.clip(0.65 + 0.014 * raw_turbidity + 0.03 * pac + rng.normal(0, 0.16, points), 0.3, 5.5)
+    pac = np.clip(
+        5.5 + 0.085 * raw_turbidity + 1.4 * (7.1 - raw_ph) + rng.normal(0, 0.7, points),
+        4,
+        28,
+    )
+    polymer = np.clip(
+        0.65 + 0.014 * raw_turbidity + 0.03 * pac + rng.normal(0, 0.16, points),
+        0.3,
+        5.5,
+    )
     ph_efficiency = np.exp(-((raw_ph - 7.05) / 0.8) ** 2)
     dose_efficiency = 0.05 * pac + 0.18 * polymer
     common = np.clip(raw_turbidity * np.exp(-dose_efficiency * ph_efficiency) / 7.5, 0.04, None)
@@ -28,7 +36,11 @@ def generate_synthetic_dataset(points: int = 360, seed: int = 42) -> pd.DataFram
     filter_1 = np.clip(common * (0.82 + fouling) + rng.normal(0, 0.055, points), 0.03, 3.5)
     filter_2 = np.clip(common * (0.88 + 0.8 * fouling) + rng.normal(0, 0.06, points), 0.03, 3.5)
     filter_3 = np.clip(common * (0.78 + 1.2 * fouling) + rng.normal(0, 0.05, points), 0.03, 3.5)
-    filtered_ph = np.clip(raw_ph - 0.012 * pac + 0.004 * polymer + rng.normal(0, 0.035, points), 5.8, 8.5)
+    filtered_ph = np.clip(
+        raw_ph - 0.012 * pac + 0.004 * polymer + rng.normal(0, 0.035, points),
+        5.8,
+        8.5,
+    )
     return pd.DataFrame(
         {
             "timestamp": timestamp,

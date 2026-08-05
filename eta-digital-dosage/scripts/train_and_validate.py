@@ -35,7 +35,9 @@ def train_and_validate(data_path: Path, project_dir: Path, artifact_dir: Path) -
     predictions = model.predict(test)
     metrics = {}
     for output in OUTPUTS:
-        metrics[f"{output}_rmse"] = float(root_mean_squared_error(test[output], predictions[output]))
+        metrics[f"{output}_rmse"] = float(
+            root_mean_squared_error(test[output], predictions[output])
+        )
         metrics[f"{output}_mae"] = float(mean_absolute_error(test[output], predictions[output]))
     artifact_dir.mkdir(parents=True, exist_ok=True)
     with (artifact_dir / "model.pkl").open("wb") as handle:

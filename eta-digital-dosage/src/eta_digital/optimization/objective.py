@@ -29,9 +29,14 @@ class ObjectiveWeights:
         ]
         ph_index = indexes["filtered_ph"]
         mean_turbidity = np.mean(scenarios.values[:, turbidity_columns], axis=1)
-        quality = self.turbidity_penalty * float(np.average(mean_turbidity, weights=scenarios.weights))
+        quality = self.turbidity_penalty * float(
+            np.average(mean_turbidity, weights=scenarios.weights)
+        )
         ph_cost = self.ph_penalty * float(
-            np.average((scenarios.values[:, ph_index] - self.ph_target) ** 2, weights=scenarios.weights)
+            np.average(
+                (scenarios.values[:, ph_index] - self.ph_target) ** 2,
+                weights=scenarios.weights,
+            )
         )
         chemical = self.pac_cost * pac_mg_l + self.polymer_cost * polymer_mg_l
         change = self.change_penalty * (
