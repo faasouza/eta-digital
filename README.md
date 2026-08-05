@@ -16,7 +16,28 @@ The dosage implementation is located in [`eta-digital-dosage/`](eta-digital-dosa
 
 Offline and synthetic datasets are located in [`data/offline/`](data/offline/). The repository is structured so that the filter-washing model can be added later as a separate module without mixing its logic with chemical-dosage control.
 
-## Quick start
+## Synthetic dataset
+
+A deterministic generator creates 200 to 500 samples containing:
+
+- raw-water turbidity;
+- raw-water pH;
+- PAC dosage;
+- polymer dosage;
+- filtered-water turbidity for Filters 1, 2 and 3;
+- one filtered-water pH value.
+
+Generate the default 360-point dataset locally:
+
+```bash
+cd eta-digital-dosage
+python scripts/generate_synthetic_data.py \
+  --points 360 \
+  --seed 42 \
+  --output ../data/offline/processed/synthetic_eta_aquiraz_360.csv
+```
+
+## Installation and local tests
 
 ```bash
 cd eta-digital-dosage
@@ -26,9 +47,20 @@ pip install -e .[dev]
 pytest
 ```
 
-For local MLflow:
+Tests are not executed on GitHub. The version-gated local release validation runs only when a semantic version is explicitly supplied and matches `pyproject.toml`:
 
 ```bash
+cd eta-digital-dosage
+chmod +x scripts/release_local.sh
+VERSION=0.1.0 ./scripts/release_local.sh
+```
+
+This command runs the complete local test suite and regenerates the 360-point synthetic dataset. A missing, invalid, or mismatched version stops the process before testing.
+
+## Local MLflow
+
+```bash
+cd eta-digital-dosage
 cp .env.example .env
 docker compose up -d
 ```
