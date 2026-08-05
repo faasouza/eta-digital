@@ -45,10 +45,16 @@ Accepted tag formats are `vMAJOR.MINOR` and `vMAJOR.MINOR.PATCH`.
 
 ## Data
 
-The deterministic synthetic dataset is generated at:
+A deterministic 200-point example is committed at:
+
+```text
+data/offline/processed/synthetic_eta_aquiraz_200.csv
+```
+
+`make synthetic-data` generates the default 360-point validation dataset at:
 
 ```text
 data/offline/processed/synthetic_eta_aquiraz_360.csv
 ```
 
-It contains raw-water turbidity and pH, PAC and polymer dosages, turbidity from three filters, and one filtered-water pH measurement. It is suitable for software validation only, not operational calibration.
+Both datasets contain raw-water turbidity and pH, PAC and polymer dosages, turbidity from three filters, and one filtered-water pH measurement. They are suitable for software validation only, not operational calibration.
