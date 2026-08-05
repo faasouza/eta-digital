@@ -10,7 +10,7 @@ def register_prediction_model(
     import mlflow
     from mlflow.models import infer_signature
 
-    output_example = model.predict(input_example)
+    output_example = model.predict(None, input_example)
     signature = infer_signature(input_example, output_example)
     return mlflow.pyfunc.log_model(
         name=artifact_path,
