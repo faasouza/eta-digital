@@ -18,51 +18,75 @@ Offline and synthetic datasets are located in [`data/offline/`](data/offline/). 
 
 ## Synthetic dataset
 
-A deterministic generator creates 200 to 500 samples containing:
-
-- raw-water turbidity;
-- raw-water pH;
-- PAC dosage;
-- polymer dosage;
-- filtered-water turbidity for Filters 1, 2 and 3;
-- one filtered-water pH value.
-
-Generate the default 360-point dataset locally:
+The deterministic generator creates 200 to 500 samples containing raw-water turbidity and pH, PAC and polymer dosage, filtered-water turbidity for Filters 1, 2 and 3, and one filtered-water pH value.
 
 ```bash
-cd eta-digital-dosage
-python scripts/generate_synthetic_data.py \
-  --points 360 \
-  --seed 42 \
-  --output ../data/offline/processed/synthetic_eta_aquiraz_360.csv
+make synthetic-data
 ```
 
-## Installation and local tests
+## Local development
+
+Install the project and development dependencies:
 
 ```bash
-cd eta-digital-dosage
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .[dev]
-pytest
+make install
 ```
 
-Tests are not executed on GitHub. The version-gated local release validation runs only when a semantic version is explicitly supplied and matches `pyproject.toml`:
+Run tests locally:
 
 ```bash
-cd eta-digital-dosage
-chmod +x scripts/release_local.sh
-VERSION=0.1.0 ./scripts/release_local.sh
+make tests
 ```
 
-This command runs the complete local test suite and regenerates the 360-point synthetic dataset. A missing, invalid, or mismatched version stops the process before testing.
-
-## Local MLflow
+Run Ruff lint checks:
 
 ```bash
-cd eta-digital-dosage
-cp .env.example .env
-docker compose up -d
+make lint
 ```
+
+Format Python code with Black:
+
+```bash
+make black
+```
+
+Run formatting checks, lint, and tests together:
+
+```bash
+make check
+```
+
+Start the local MLflow stack:
+
+```bash
+make mlflow up
+```
+
+Stop it with:
+
+```bash
+make down
+```
+
+## GitHub Actions
+
+GitHub Actions does not run for ordinary commits or pull requests. The release-validation workflow runs only when a version tag is pushed.
+
+Accepted tag formats are:
+
+```text
+v1.0
+v1.2
+v1.2.0
+```
+
+Example:
+
+```bash
+git tag v1.0
+git push origin v1.0
+```
+
+The tagged workflow checks Black formatting, runs Ruff, and executes the pytest suite.
 
 See [`eta-digital-dosage/README.md`](eta-digital-dosage/README.md) for the model architecture, data requirements and deployment workflow.
