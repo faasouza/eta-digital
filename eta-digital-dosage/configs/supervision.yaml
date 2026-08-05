@@ -1,0 +1,6 @@
+minimum_accept_confidence: 0.75
+minimum_limited_confidence: 0.50
+maximum_pac_change_mg_l: 2.0
+maximum_polymer_change_mg_l: 0.75
+fallback_pac_mg_l: 10.95
+fallback_polymer_mg_l: 3.70

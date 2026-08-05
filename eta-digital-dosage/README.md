@@ -1,62 +1,22 @@
 # ETA-DIGITAL — Coagulant Dosage
 
-Reference implementation of the ETA-DIGITAL dosage decision component for PAC and cationic polymer. The implementation separates process prediction from dosage optimization and operational supervision.
+Modular reference implementation for contextual prediction and robust recommendation of PAC and cationic-polymer dosage. Prediction, uncertainty, optimization, fuzzy supervision, adaptation, and MLflow lifecycle logic are separated.
 
-The predictive model is a contextual mixture of experts. Possibility functions identify overlapping raw-water operating contexts. Each contextual expert predicts filtered-water turbidity and pH for candidate PAC and polymer dosages and estimates predictive uncertainty. Scenario generation and 95% chance-constrained optimization run outside the MLflow model. Fuzzy supervision accepts, limits, or rejects the optimized recommendation.
+## Scope
 
-## Repository scope
+- Possibility-function context identification.
+- Contextual mixture of multi-output linear experts.
+- Predictive covariance and conformal calibration.
+- Weighted Monte Carlo scenarios.
+- Joint 95% chance-constrained dosage optimization.
+- Fuzzy acceptance, limitation, and fallback.
+- Controlled online expert updates.
+- Prediction-only MLflow PyFunc packaging.
+- FastAPI prediction and recommendation endpoints.
 
-- Context identification with triangular, trapezoidal, and Gaussian possibility functions.
-- Contextual multi-output adaptive linear experts.
-- Mixture mean and covariance using within-expert and between-expert uncertainty.
-- Conformal uncertainty calibration.
-- Weighted Monte Carlo scenarios with sensor and process uncertainty.
-- Grid-based scenario optimization for PAC and polymer.
-- Joint 95% quality constraint for filtered turbidity and pH.
-- Fuzzy supervision, rate limiting, and fallback.
-- Controlled recursive model updates after validated observations.
-- MLflow PyFunc packaging for the prediction model only.
-- FastAPI endpoints for prediction and recommendation.
+Hard interlocks, permissives, watchdogs, communications, and final command authority remain in DataBridge/PLC.
 
-The PLC and DataBridge remain responsible for hard interlocks, permissives, watchdogs, communication failures, and final command authority.
-
-## Layout
-
-```text
-eta-digital-dosage/
-├── configs/
-├── notebooks/
-├── src/eta_digital/
-└── tests/
-
-../data/offline/
-├── raw/
-├── interim/
-├── processed/
-└── schemas/
-```
-
-The attached `.xls` files under `data/offline/raw` are source examples. They contain catalogue-like rows for available quality parameters and chemical products, not the time-stamped numerical values required to train the model. A training dataset must contain aligned raw-water conditions, applied dosages, and delayed filtered-water outcomes.
-
-## Required training columns
-
-```text
-timestamp
-raw_turbidity_ntu
-raw_ph
-flow_m3_h
-temperature_c
-pac_mg_l
-polymer_mg_l
-filtered_turbidity_ntu
-filtered_ph
-```
-
-Optional operational columns include `filter_id`, `filter_state`, `sensor_quality`, and event flags for backwashing or maintenance.
-
-## Installation
-
-From `eta-digital-dosage`:
+## Installation and tests
 
 ```bash
 python -m venv .venv
@@ -65,20 +25,21 @@ pip install -e .[dev]
 pytest
 ```
 
-## Local MLflow
+## Data
+
+Offline source files are under `../data/offline/raw`. The attached `.xls` examples are retained unchanged. They are useful for ingestion/schema development, but numerical, time-aligned process records are required to train the model. See `../data/offline/README.md` and `../data/offline/schemas/training_schema.csv`.
+
+## MLflow
 
 ```bash
 cp .env.example .env
 docker compose up -d
 ```
 
-The default tracking URI is `http://localhost:5000`. The three notebooks train the model, register a candidate version, and assign the `champion` alias after validation.
+Run the notebooks in order:
 
-## Production separation
+1. `01_train_model.ipynb`
+2. `02_register_mlflow.ipynb`
+3. `03_promote_to_production.ipynb`
 
-1. MLflow stores and serves the contextual prediction model.
-2. The dosage service loads the approved model.
-3. Scenario generation evaluates uncertainty for candidate dosages.
-4. The optimizer selects PAC and polymer under the configured constraints.
-5. Fuzzy supervision applies confidence rules and fallback.
-6. DataBridge and the PLC enforce operational and safety constraints.
+The MLflow model serves predictions and uncertainty for candidate dosage values. Scenario optimization and fuzzy supervision remain separate runtime components.

@@ -1,0 +1,14 @@
+contexts:
+  low_turbidity:
+    raw_turbidity_ntu: {type: trapezoidal, parameters: [0, 0, 15, 35]}
+  medium_turbidity:
+    raw_turbidity_ntu: {type: triangular, parameters: [15, 50, 100]}
+  high_turbidity:
+    raw_turbidity_ntu: {type: trapezoidal, parameters: [60, 120, 500, 500]}
+  low_ph:
+    raw_ph: {type: trapezoidal, parameters: [0, 0, 6.4, 6.9]}
+  normal_ph:
+    raw_ph: {type: trapezoidal, parameters: [6.5, 6.9, 7.6, 8.0]}
+  high_turbidity_low_ph:
+    raw_turbidity_ntu: {type: trapezoidal, parameters: [60, 120, 500, 500]}
+    raw_ph: {type: trapezoidal, parameters: [0, 0, 6.5, 7.0]}
