@@ -1,11 +1,23 @@
 import numpy as np
 import pandas as pd
-from eta_digital.contexts.membership import TriangularMembership,TrapezoidalMembership
-from eta_digital.contexts.context_model import ContextDefinition,ContextModel
+
+from eta_digital.contexts import ContextModel, TrapezoidalMembership, TriangularMembership
+
 
 def test_memberships_are_bounded():
-    x=np.linspace(-2,12,100); assert np.all((TriangularMembership(0,5,10)(x)>=0)&(TriangularMembership(0,5,10)(x)<=1)); assert TrapezoidalMembership(0,2,8,10)(np.array([5.]))[0]==1
+    x = np.array([-1, 0, 1, 2, 3, 4], dtype=float)
+    for membership in [TriangularMembership(0, 2, 4), TrapezoidalMembership(0, 1, 3, 4)]:
+        values = membership(x)
+        assert np.all((values >= 0) & (values <= 1))
+
 
 def test_context_weights_sum_to_one():
-    model=ContextModel([ContextDefinition("a",{"x":TriangularMembership(0,5,10)}),ContextDefinition("b",{"x":TriangularMembership(5,10,15)})])
-    weights=model.weights(pd.DataFrame({"x":[2,7,20]})); assert np.allclose(weights.sum(axis=1),1)
+    config = {
+        "contexts": {
+            "low": {"raw_turbidity_ntu": {"type": "triangular", "parameters": [0, 0, 60]}},
+            "high": {"raw_turbidity_ntu": {"type": "triangular", "parameters": [20, 100, 200]}},
+        }
+    }
+    model = ContextModel.from_config(config)
+    weights = model.weights(pd.DataFrame({"raw_turbidity_ntu": [10, 50, 150]}))
+    assert np.allclose(weights.sum(axis=1), 1.0)

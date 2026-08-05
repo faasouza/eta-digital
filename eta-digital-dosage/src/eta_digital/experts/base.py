@@ -1,11 +1,17 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
 import numpy as np
 import pandas as pd
 
-@dataclass
-class PredictionDistribution:
-    mean: pd.DataFrame
-    covariance: np.ndarray
-    context_weights: pd.DataFrame
-    context_confidence: pd.Series
-    dominant_context: pd.Series
+
+class PredictiveExpert(ABC):
+    @abstractmethod
+    def fit(self, frame: pd.DataFrame, targets: pd.DataFrame, sample_weight: np.ndarray) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def predict(self, frame: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
+        """Return mean [n, outputs] and covariance [n, outputs, outputs]."""
+        raise NotImplementedError

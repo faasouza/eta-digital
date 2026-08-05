@@ -1,15 +1,10 @@
 column,type,unit,required,description
-timestamp,datetime_utc,,yes,Reference time for raw water and applied dosage
+timestamp,datetime_utc,,yes,Reference timestamp
 raw_turbidity_ntu,float,NTU,yes,Raw-water turbidity
 raw_ph,float,pH,yes,Raw-water pH
-flow_m3_h,float,m3/h,yes,Treated flow
-temperature_c,float,C,yes,Raw-water temperature
-pac_mg_l,float,mg/L,yes,Applied PAC dosage
-polymer_mg_l,float,mg/L,yes,Applied cationic-polymer dosage
-filtered_turbidity_ntu,float,NTU,yes,Filtered-water turbidity after aligned treatment delay
-filtered_ph,float,pH,yes,Filtered-water pH after aligned treatment delay
-filter_id,string,,no,Filter identifier
-filter_state,string,,no,Filtration/backwash/maintenance state
-sensor_quality,float,0-1,no,Aggregated sensor-quality indicator
-backwash_active,bool,,no,Backwash event flag
-maintenance_active,bool,,no,Maintenance event flag
+pac_mg_l,float,mg/L,yes,PAC dosage
+polymer_mg_l,float,mg/L,yes,Cationic-polymer dosage
+filter_1_turbidity_ntu,float,NTU,yes,Filtered-water turbidity from Filter 1
+filter_2_turbidity_ntu,float,NTU,yes,Filtered-water turbidity from Filter 2
+filter_3_turbidity_ntu,float,NTU,yes,Filtered-water turbidity from Filter 3
+filtered_ph,float,pH,yes,Common filtered-water pH

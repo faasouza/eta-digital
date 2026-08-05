@@ -1,3 +1,6 @@
 """ETA-DIGITAL dosage modelling package."""
 
-__version__ = "0.1.0"
+from .pipeline import DosageDecisionPipeline
+
+__all__ = ["DosageDecisionPipeline"]
+__version__ = "0.2.0"

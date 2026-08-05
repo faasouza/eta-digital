@@ -1,3 +1,4 @@
-from .fallback import FallbackPolicy
-from .fuzzy_rules import SupervisionConfig, SupervisionDecision, FuzzySupervisor
-__all__=["FallbackPolicy","SupervisionConfig","SupervisionDecision","FuzzySupervisor"]
+from .fallback import FallbackDosage
+from .fuzzy_rules import FuzzySupervisor, SupervisionResult
+
+__all__ = ["FallbackDosage", "FuzzySupervisor", "SupervisionResult"]

@@ -1,2 +1,3 @@
-from .generator import ScenarioSet, WeightedScenarioGenerator
-__all__=["ScenarioSet","WeightedScenarioGenerator"]
+from .generator import ScenarioBatch, WeightedScenarioGenerator
+
+__all__ = ["ScenarioBatch", "WeightedScenarioGenerator"]

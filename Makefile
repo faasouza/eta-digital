@@ -1,30 +1,20 @@
-SHELL := /bin/bash
-
 PROJECT_DIR := eta-digital-dosage
-PYTHON ?= python3
+PROJECT_PYTHONPATH := $(CURDIR)/$(PROJECT_DIR)/src:$(CURDIR)/$(PROJECT_DIR)/scripts
+PYTHON ?= python
 PIP ?= $(PYTHON) -m pip
-COMPOSE := docker compose -f $(PROJECT_DIR)/docker-compose.yml
+COMPOSE ?= docker compose
+DATA_FILE := data/offline/processed/synthetic_eta_aquiraz_360.csv
 
-.PHONY: help install tests test lint black black-check format-check check mlflow mlflow-up up down restart logs ps clean synthetic-data
+.PHONY: help install tests lint black black-check check synthetic-data train e2e notebooks mlflow up down restart logs ps clean
 
 help:
-	@echo "Available commands:"
-	@echo "  make install       Install the package and development dependencies"
-	@echo "  make tests         Run the local pytest suite"
-	@echo "  make lint          Run Ruff lint checks"
-	@echo "  make black         Format Python files with Black"
-	@echo "  make black-check   Check Black formatting without modifying files"
-	@echo "  make check         Run formatting check, lint, and tests"
-	@echo "  make mlflow up     Start the local MLflow stack"
-	@echo "  make down          Stop the local MLflow stack"
-	@echo "  make logs          Follow MLflow container logs"
-	@echo "  make synthetic-data Generate the default synthetic dataset"
+	@echo "Available targets: install tests lint black black-check check synthetic-data train e2e notebooks mlflow up down restart logs ps clean"
 
 install:
 	cd $(PROJECT_DIR) && $(PIP) install -e ".[dev]"
 
-tests test:
-	cd $(PROJECT_DIR) && $(PYTHON) -m pytest
+tests:
+	cd $(PROJECT_DIR) && PYTHONPATH=$(PROJECT_PYTHONPATH) $(PYTHON) -m pytest
 
 lint:
 	cd $(PROJECT_DIR) && $(PYTHON) -m ruff check src tests scripts
@@ -32,39 +22,38 @@ lint:
 black:
 	cd $(PROJECT_DIR) && $(PYTHON) -m black src tests scripts
 
-black-check format-check:
+black-check:
 	cd $(PROJECT_DIR) && $(PYTHON) -m black --check src tests scripts
 
-check: black-check lint tests
+synthetic-data:
+	cd $(PROJECT_DIR) && PYTHONPATH=$(PROJECT_PYTHONPATH) $(PYTHON) scripts/generate_synthetic_data.py --points 360 --seed 42 --output ../$(DATA_FILE)
 
-# `make mlflow up` is supported. The explicit `up` target performs the work;
-# Make executes it only once even when requested both directly and as a prerequisite.
+train: synthetic-data
+	cd $(PROJECT_DIR) && PYTHONPATH=$(PROJECT_PYTHONPATH) $(PYTHON) scripts/train_and_validate.py --data ../$(DATA_FILE) --project-dir . --artifacts artifacts
+
+e2e: train tests
+
+notebooks: synthetic-data
+	cd $(PROJECT_DIR) && PYTHONPATH=$(PROJECT_PYTHONPATH) $(PYTHON) scripts/run_notebooks.py
+
+check: black-check lint tests synthetic-data train
+
 mlflow: up
 
-mlflow-up: up
-
 up:
-	$(COMPOSE) up -d
+	cd $(PROJECT_DIR) && $(COMPOSE) up -d
 
 down:
-	$(COMPOSE) down
+	cd $(PROJECT_DIR) && $(COMPOSE) down
 
-restart:
-	$(COMPOSE) down
-	$(COMPOSE) up -d
+restart: down up
 
 logs:
-	$(COMPOSE) logs -f
+	cd $(PROJECT_DIR) && $(COMPOSE) logs -f mlflow
 
 ps:
-	$(COMPOSE) ps
-
-synthetic-data:
-	cd $(PROJECT_DIR) && $(PYTHON) scripts/generate_synthetic_data.py
+	cd $(PROJECT_DIR) && $(COMPOSE) ps
 
 clean:
+	rm -rf $(PROJECT_DIR)/artifacts $(PROJECT_DIR)/.pytest_cache $(PROJECT_DIR)/.ruff_cache $(PROJECT_DIR)/.mypy_cache
 	find $(PROJECT_DIR) -type d -name __pycache__ -prune -exec rm -rf {} +
-	find $(PROJECT_DIR) -type d -name .pytest_cache -prune -exec rm -rf {} +
-	find $(PROJECT_DIR) -type d -name .ruff_cache -prune -exec rm -rf {} +
-	find $(PROJECT_DIR) -type d -name .mypy_cache -prune -exec rm -rf {} +
-	find $(PROJECT_DIR) -type f -name '*.py[co]' -delete

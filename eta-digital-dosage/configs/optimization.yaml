@@ -1,10 +1,10 @@
-number_of_scenarios: 400
+number_of_scenarios: 300
 compliance_probability: 0.95
-pac_bounds_mg_l: [0.0, 30.0]
-polymer_bounds_mg_l: [0.0, 10.0]
-pac_grid_points: 31
-polymer_grid_points: 21
-filtered_turbidity_max_ntu: 0.5
+pac_bounds_mg_l: [2.0, 30.0]
+polymer_bounds_mg_l: [0.2, 6.0]
+pac_grid_points: 29
+polymer_grid_points: 20
+filter_turbidity_max_ntu: 1.5
 filtered_ph_bounds: [6.0, 9.5]
 chemical_costs: {pac: 1.0, polymer: 2.5}
 quality_penalties: {turbidity: 20.0, ph: 2.0}

@@ -1,6 +1,16 @@
-features: [raw_turbidity_ntu, raw_ph, flow_m3_h, temperature_c, pac_mg_l, polymer_mg_l]
-context_features: [raw_turbidity_ntu, raw_ph]
-outputs: [filtered_turbidity_ntu, filtered_ph]
+features:
+  - raw_turbidity_ntu
+  - raw_ph
+  - pac_mg_l
+  - polymer_mg_l
+context_features:
+  - raw_turbidity_ntu
+  - raw_ph
+outputs:
+  - filter_1_turbidity_ntu
+  - filter_2_turbidity_ntu
+  - filter_3_turbidity_ntu
+  - filtered_ph
 ridge_alpha: 1.0
 minimum_context_weight: 0.001
 online_learning_rate: 0.02

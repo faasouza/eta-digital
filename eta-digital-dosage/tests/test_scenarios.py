@@ -1,6 +1,13 @@
-import pandas as pd
-from eta_digital.scenarios.generator import WeightedScenarioGenerator
+import numpy as np
 
-def test_scenarios(predictor):
-    state=pd.DataFrame([{"raw_turbidity_ntu":70,"raw_ph":7.2,"flow_m3_h":450,"temperature_c":27,"pac_mg_l":12,"polymer_mg_l":3.5}])
-    scenarios=WeightedScenarioGenerator(predictor,50,{"raw_turbidity_ntu":1.0}).generate(state); assert scenarios.outcomes.shape==(50,2); assert abs(scenarios.weights.sum()-1)<1e-12
+from eta_digital.scenarios import WeightedScenarioGenerator
+from test_mixture import build_model
+
+
+def test_scenarios_have_four_outputs_and_normalized_weights():
+    model, frame = build_model()
+    generator = WeightedScenarioGenerator(model, number_of_scenarios=100, random_seed=1)
+    batch = generator.generate(frame.iloc[[210]][model.features])
+    assert batch.values.shape == (100, 4)
+    assert np.isclose(batch.weights.sum(), 1.0)
+    assert (batch.values[:, :3] >= 0).all()

@@ -1,2 +1,3 @@
-from .api import create_app
-__all__=["create_app"]
+from .api import app
+
+__all__ = ["app"]

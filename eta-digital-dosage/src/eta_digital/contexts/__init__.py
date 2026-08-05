@@ -1,4 +1,10 @@
-from .membership import MembershipFunction, build_membership
 from .context_model import ContextDefinition, ContextModel
+from .membership import GaussianMembership, TrapezoidalMembership, TriangularMembership
 
-__all__ = ["MembershipFunction", "build_membership", "ContextDefinition", "ContextModel"]
+__all__ = [
+    "ContextDefinition",
+    "ContextModel",
+    "GaussianMembership",
+    "TrapezoidalMembership",
+    "TriangularMembership",
+]

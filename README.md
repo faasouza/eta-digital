@@ -1,92 +1,54 @@
 # ETA-DIGITAL
 
-ETA-DIGITAL is a modular platform for data-driven support of water-treatment operations.
+ETA-DIGITAL is a modular platform for data-driven decision support in water treatment. The first module implements PAC and cationic-polymer dosage modelling. A filter-washing module can be added independently later.
 
-The first implemented component is the PAC and polymer dosage module:
+## Dosage model
 
-- contextual mixture of experts;
-- prediction of filtered-water pH and turbidity;
-- uncertainty estimation and scenario generation;
-- 95% chance-constrained dosage optimization;
-- fuzzy supervision and fallback;
+The implementation under [`eta-digital-dosage/`](eta-digital-dosage/) contains:
+
+- context identification through possibility functions;
+- a contextual mixture of multi-output experts;
+- prediction of turbidity for Filters 1, 2 and 3 and one filtered-water pH value;
+- predictive uncertainty and weighted scenarios;
+- joint chance-constrained optimization at the configured probability;
+- fuzzy supervision, rate limiting and fallback;
 - controlled online adaptation;
-- MLflow packaging, registration and production promotion.
+- MLflow packaging, registration and model aliases.
 
-The dosage implementation is located in [`eta-digital-dosage/`](eta-digital-dosage/).
-
-Offline and synthetic datasets are located in [`data/offline/`](data/offline/). The repository is structured so that the filter-washing model can be added later as a separate module without mixing its logic with chemical-dosage control.
-
-## Synthetic dataset
-
-The deterministic generator creates 200 to 500 samples containing raw-water turbidity and pH, PAC and polymer dosage, filtered-water turbidity for Filters 1, 2 and 3, and one filtered-water pH value.
-
-```bash
-make synthetic-data
-```
-
-## Local development
-
-Install the project and development dependencies:
+## Local commands
 
 ```bash
 make install
-```
-
-Run tests locally:
-
-```bash
 make tests
-```
-
-Run Ruff lint checks:
-
-```bash
 make lint
-```
-
-Format Python code with Black:
-
-```bash
 make black
-```
-
-Run formatting checks, lint, and tests together:
-
-```bash
-make check
-```
-
-Start the local MLflow stack:
-
-```bash
+make black-check
+make synthetic-data
+make train
+make e2e
 make mlflow up
-```
-
-Stop it with:
-
-```bash
 make down
 ```
 
-## GitHub Actions
+`make mlflow up` and `make mlflow` both start the local MLflow service through Docker Compose.
 
-GitHub Actions does not run for ordinary commits or pull requests. The release-validation workflow runs only when a version tag is pushed.
+## CI policy
 
-Accepted tag formats are:
-
-```text
-v1.0
-v1.2
-v1.2.0
-```
-
-Example:
+GitHub Actions does not run for ordinary pushes or pull requests. Validation runs only when a semantic version tag is pushed, for example:
 
 ```bash
-git tag v1.0
-git push origin v1.0
+git tag v1.2
+git push origin v1.2
 ```
 
-The tagged workflow checks Black formatting, runs Ruff, and executes the pytest suite.
+Accepted tag formats are `vMAJOR.MINOR` and `vMAJOR.MINOR.PATCH`.
 
-See [`eta-digital-dosage/README.md`](eta-digital-dosage/README.md) for the model architecture, data requirements and deployment workflow.
+## Data
+
+The deterministic synthetic dataset is generated at:
+
+```text
+data/offline/processed/synthetic_eta_aquiraz_360.csv
+```
+
+It contains raw-water turbidity and pH, PAC and polymer dosages, turbidity from three filters, and one filtered-water pH measurement. It is suitable for software validation only, not operational calibration.

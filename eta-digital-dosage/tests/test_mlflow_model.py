@@ -1,5 +1,10 @@
-import pandas as pd
-from eta_digital.mlflow.pyfunc_model import EtaDigitalPredictionModel
+from eta_digital.mlflow import EtaDigitalPredictionModel
+from test_mixture import build_model
 
-def test_pyfunc_contains_prediction_not_optimization(predictor):
-    x=pd.DataFrame([{"raw_turbidity_ntu":50,"raw_ph":7,"flow_m3_h":450,"temperature_c":27,"pac_mg_l":11,"polymer_mg_l":3.7}]); out=EtaDigitalPredictionModel(predictor).predict(None,x); assert "filtered_turbidity_ntu" in out and "context_confidence" in out; assert "recommended_pac_mg_l" not in out
+
+def test_pyfunc_wrapper_predicts_new_schema_without_mlflow_server():
+    model, frame = build_model()
+    wrapper = EtaDigitalPredictionModel(model)
+    result = wrapper.predict(None, frame.iloc[200:203][model.features])
+    assert set(model.outputs).issubset(result.columns)
+    assert len(result) == 3

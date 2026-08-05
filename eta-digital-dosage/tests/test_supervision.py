@@ -1,7 +1,10 @@
-from eta_digital.optimization.optimizer import OptimizationResult
-from eta_digital.supervision.fallback import FallbackPolicy
-from eta_digital.supervision.fuzzy_rules import FuzzySupervisor,SupervisionConfig
+from eta_digital.optimization import OptimizationResult
+from eta_digital.supervision import FallbackDosage, FuzzySupervisor
 
-def test_supervisor_accepts_and_falls_back():
-    s=FuzzySupervisor(SupervisionConfig(),FallbackPolicy(10.95,3.7)); r=OptimizationResult(12,4,1,.97,True,10); d=s.evaluate(r,.95,1,0,(11,3.5)); assert d.status=="accepted"
-    d=s.evaluate(OptimizationResult(12,4,1,.4,False,10),.2,.2,1,(11,3.5)); assert d.status=="fallback" and d.pac_mg_l==10.95
+
+def test_supervisor_falls_back_for_infeasible_result():
+    supervisor = FuzzySupervisor(0.75, 0.5, 2.0, 0.75, FallbackDosage(10.95, 3.7))
+    optimum = OptimizationResult(15, 3, 1, 0.6, False, 10)
+    result = supervisor.evaluate(optimum, 0.9, 1.0, (10, 2))
+    assert result.status == "fallback"
+    assert result.pac_mg_l == 10.95

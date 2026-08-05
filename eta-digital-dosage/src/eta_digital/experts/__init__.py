@@ -1,4 +1,5 @@
-from .base import PredictionDistribution
-from .regression import WeightedLinearExpert
+from .base import PredictiveExpert
 from .mixture import ContextualMixtureOfExperts
-__all__=["PredictionDistribution","WeightedLinearExpert","ContextualMixtureOfExperts"]
+from .regression import MultiOutputLinearExpert
+
+__all__ = ["ContextualMixtureOfExperts", "MultiOutputLinearExpert", "PredictiveExpert"]

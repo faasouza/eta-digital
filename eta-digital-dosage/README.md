@@ -1,45 +1,41 @@
-# ETA-DIGITAL — Coagulant Dosage
+# ETA-DIGITAL dosage module
 
-Modular reference implementation for contextual prediction and robust recommendation of PAC and cationic-polymer dosage. Prediction, uncertainty, optimization, fuzzy supervision, adaptation, and MLflow lifecycle logic are separated.
+This module separates prediction, uncertainty, optimization, supervision and model lifecycle logic.
 
-## Scope
+## Model inputs
 
-- Possibility-function context identification.
-- Contextual mixture of multi-output linear experts.
-- Predictive covariance and conformal calibration.
-- Weighted Monte Carlo scenarios.
-- Joint 95% chance-constrained dosage optimization.
-- Fuzzy acceptance, limitation, and fallback.
-- Controlled online expert updates.
-- Prediction-only MLflow PyFunc packaging.
-- FastAPI prediction and recommendation endpoints.
+- `raw_turbidity_ntu`
+- `raw_ph`
+- `pac_mg_l`
+- `polymer_mg_l`
 
-Hard interlocks, permissives, watchdogs, communications, and final command authority remain in DataBridge/PLC.
+## Model outputs
 
-## Installation and tests
+- `filter_1_turbidity_ntu`
+- `filter_2_turbidity_ntu`
+- `filter_3_turbidity_ntu`
+- `filtered_ph`
+
+The chance constraint is joint: all three filter-turbidity outputs and filtered pH must satisfy their limits in at least the configured fraction of weighted scenarios.
+
+## Development
+
+From the repository root:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .[dev]
-pytest
+make install
+make tests
+make lint
+make black
+make synthetic-data
+make train
+make e2e
 ```
-
-## Data
-
-Offline source files are under `../data/offline/raw`. The attached `.xls` examples are retained unchanged. They are useful for ingestion/schema development, but numerical, time-aligned process records are required to train the model. See `../data/offline/README.md` and `../data/offline/schemas/training_schema.csv`.
 
 ## MLflow
 
 ```bash
-cp .env.example .env
-docker compose up -d
+make mlflow up
 ```
 
-Run the notebooks in order:
-
-1. `01_train_model.ipynb`
-2. `02_register_mlflow.ipynb`
-3. `03_promote_to_production.ipynb`
-
-The MLflow model serves predictions and uncertainty for candidate dosage values. Scenario optimization and fuzzy supervision remain separate runtime components.
+Run the notebooks in order to train, register and promote a model. The MLflow PyFunc contains prediction only. Scenario optimization and fuzzy supervision remain separate runtime components.

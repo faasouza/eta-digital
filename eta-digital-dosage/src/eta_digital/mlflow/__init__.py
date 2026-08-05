@@ -1,3 +1,10 @@
 from .pyfunc_model import EtaDigitalPredictionModel
-from .registry import configure_tracking,log_and_register_prediction_model,promote_model_version,load_model_by_alias
-__all__=["EtaDigitalPredictionModel","configure_tracking","log_and_register_prediction_model","promote_model_version","load_model_by_alias"]
+from .registry import register_prediction_model, set_model_alias
+from .signatures import prediction_input_example
+
+__all__ = [
+    "EtaDigitalPredictionModel",
+    "prediction_input_example",
+    "register_prediction_model",
+    "set_model_alias",
+]

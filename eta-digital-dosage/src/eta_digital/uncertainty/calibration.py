@@ -1,16 +1,20 @@
 from __future__ import annotations
-from statistics import NormalDist
+
+from dataclasses import dataclass
+
 import numpy as np
 
-class ConformalCalibrator:
-    def __init__(self, coverage:float=0.95):
-        if not 0<coverage<1: raise ValueError("coverage must be between zero and one")
-        self.coverage=coverage; self.scale_=None
-    def fit(self,y_true:np.ndarray,y_pred:np.ndarray,std:np.ndarray):
-        std=np.maximum(np.asarray(std,float),1e-9)
-        scores=np.abs(np.asarray(y_true,float)-np.asarray(y_pred,float))/std
-        self.scale_=np.quantile(scores,self.coverage,axis=0,method="higher")/NormalDist().inv_cdf((1+self.coverage)/2)
+
+@dataclass
+class ConformalScaleCalibrator:
+    coverage: float = 0.95
+    scale_: float = 1.0
+
+    def fit(self, observed: np.ndarray, predicted: np.ndarray, std: np.ndarray) -> "ConformalScaleCalibrator":
+        safe_std = np.maximum(np.asarray(std, dtype=float), 1e-8)
+        scores = np.abs(np.asarray(observed, dtype=float) - np.asarray(predicted, dtype=float)) / safe_std
+        self.scale_ = float(np.quantile(scores, self.coverage))
         return self
-    def calibrate_covariance(self,covariance:np.ndarray)->np.ndarray:
-        if self.scale_ is None: raise RuntimeError("calibrator is not fitted")
-        scale=np.diag(np.asarray(self.scale_,float)); return np.einsum('ij,njk,kl->nil',scale,covariance,scale)
+
+    def transform_covariance(self, covariance: np.ndarray) -> np.ndarray:
+        return np.asarray(covariance, dtype=float) * self.scale_**2
